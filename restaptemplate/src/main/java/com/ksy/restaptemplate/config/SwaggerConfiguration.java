@@ -19,12 +19,12 @@ public class SwaggerConfiguration {
                 .apis(RequestHandlerSelectors.basePackage("com.ksy.restaptemplate.controller"))
                 .paths(PathSelectors.any())
                 .build()
-                .useDefaultResponseMessages(false); // 기본으로 세팅되는 200,401,403,404 메시지를 표시 하지 않음
+                .useDefaultResponseMessages(false); // 湲곕낯�쑝濡� �꽭�똿�릺�뒗 200,401,403,404 硫붿떆吏�瑜� �몴�떆 �븯吏� �븡�쓬
     }
 
     private ApiInfo swaggerInfo() {
         return new ApiInfoBuilder().title("Spring API Documentation")
-                .description("앱 개발시 사용되는 서버 API에 대한 연동 문서입니다")
+                .description("Wechat API")
                 .license("ksy").licenseUrl("http://naver.com").version("1").build();
     }
 }

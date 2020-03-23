@@ -17,3 +17,6 @@ entryPointException:
 accessDenied:
   code: "-1003"
   msg: "A resource that can not be accessed with the privileges it has."
+emailSignupFailed:
+  code: "-1004"
+  msg: "This account(email) already exist."

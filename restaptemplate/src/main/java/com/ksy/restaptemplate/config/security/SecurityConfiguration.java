@@ -26,21 +26,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable() // rest api 이므로 기본설정 사용안함. 기본설정은 비인증시 로그인폼 화면으로 리다이렉트 된다.
-                .csrf().disable() // rest api이므로 csrf 보안이 필요없으므로 disable처리.
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token으로 인증하므로 세션은 필요없으므로 생성안함.
+                .httpBasic().disable() // rest api �씠誘�濡� 湲곕낯�꽕�젙 �궗�슜�븞�븿. 湲곕낯�꽕�젙�� 鍮꾩씤利앹떆 濡쒓렇�씤�뤌 �솕硫댁쑝濡� 由щ떎�씠�젆�듃 �맂�떎.
+                .csrf().disable() // rest api�씠誘�濡� csrf 蹂댁븞�씠 �븘�슂�뾾�쑝誘�濡� disable泥섎━.
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // jwt token�쑝濡� �씤利앺븯誘�濡� �꽭�뀡�� �븘�슂�뾾�쑝誘�濡� �깮�꽦�븞�븿.
                 .and()
-                .authorizeRequests() // 다음 리퀘스트에 대한 사용권한 체크
-                .antMatchers("/*/signin", "/*/signup").permitAll() // 가입 및 인증 주소는 누구나 접근가능
-                .antMatchers(HttpMethod.GET, "/exception/**", "helloworld/**").permitAll() // exception추가 시작하는 GET요청 리소스는 누구나 접근가능
-                .antMatchers(HttpMethod.POST, "/*/user").permitAll() // 회원 가입 요청 접근 가능
-                .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
+                .authorizeRequests() // �떎�쓬 由ы�섏뒪�듃�뿉 ���븳 �궗�슜沅뚰븳 泥댄겕
+                .antMatchers("/*/signin", "/*/signup").permitAll() // 媛��엯 諛� �씤利� 二쇱냼�뒗 �늻援щ굹 �젒洹쇨��뒫
+                .antMatchers(HttpMethod.GET, "/exception/**", "helloworld/**").permitAll() // exception異붽� �떆�옉�븯�뒗 GET�슂泥� 由ъ냼�뒪�뒗 �늻援щ굹 �젒洹쇨��뒫
+                .antMatchers(HttpMethod.POST, "/*/user").permitAll() // �쉶�썝 媛��엯 �슂泥� �젒洹� 媛��뒫
+                .antMatchers(HttpMethod.POST, "/*/auth/signin").permitAll() // �쉶�썝 媛��엯 �슂泥� �젒洹� 媛��뒫
+                .anyRequest().hasRole("USER") // 洹몄쇅 �굹癒몄� �슂泥��� 紐⑤몢 �씤利앸맂 �쉶�썝留� �젒洹� 媛��뒫
                 .and()
-                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler()) //토큰은 정상이나 해당 권한으로 접근 불가능시 핸들러로 보냄.
+                .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler()) //�넗�겙�� �젙�긽�씠�굹 �빐�떦 沅뚰븳�쑝濡� �젒洹� 遺덇��뒫�떆 �빖�뱾�윭濡� 蹂대깂.
                 .and()
                 .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class); // jwt token �븘�꽣瑜� id/password �씤利� �븘�꽣 �쟾�뿉 �꽔�뒗�떎
     }
 
     @Override // ignore check swagger resource

@@ -1,6 +1,8 @@
 package com.ksy.restaptemplate.advice;
 
 import com.ksy.restaptemplate.advice.exception.CAuthenticationEntryPointException;
+import com.ksy.restaptemplate.advice.exception.CEmailSigninFailedException;
+import com.ksy.restaptemplate.advice.exception.CEmailSignupFailedException;
 import com.ksy.restaptemplate.advice.exception.CTestNotFoundException;
 import com.ksy.restaptemplate.advice.exception.CUserNotFoundException;
 import com.ksy.restaptemplate.model.response.CommonResult;
@@ -25,22 +27,31 @@ public class ExceptionAdvice {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult defaultException(HttpServletRequest request, Exception e) {
-        // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+        // �삁�쇅 泥섎━�쓽 硫붿떆吏�瑜� MessageSource�뿉�꽌 媛��졇�삤�룄濡� �닔�젙
+    	e.printStackTrace();
         return responseService.getFailResult(Integer.valueOf(getMessage("unKnown.code")), getMessage("unKnown.msg"));
     }
 
     @ExceptionHandler(CTestNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult testNotFoundException(HttpServletRequest request, CTestNotFoundException e) {
-        // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
         return responseService.getFailResult(Integer.valueOf(getMessage("testNotFound.code")), getMessage("testNotFound.msg"));
     }
 
     @ExceptionHandler(CUserNotFoundException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    protected CommonResult testNotFoundException(HttpServletRequest request, CUserNotFoundException e) {
-        // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-        return responseService.getFailResult(Integer.valueOf(getMessage("testNotFound.code")), getMessage("testNotFound.msg"));
+    protected CommonResult userNotFoundException(HttpServletRequest request, CUserNotFoundException e) {
+        return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")), getMessage("userNotFound.msg"));
+    }
+    @ExceptionHandler(CEmailSigninFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult emailSigninFailedException(HttpServletRequest request, CEmailSigninFailedException e) {
+        return responseService.getFailResult(Integer.valueOf(getMessage("emailSigninFailed.code")), getMessage("emailSigninFailed.msg"));
+    }
+    @ExceptionHandler(CEmailSignupFailedException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected CommonResult emailSignupFailedException(HttpServletRequest request, CEmailSignupFailedException e) {
+        return responseService.getFailResult(Integer.valueOf(getMessage("emailSignupFailed.code")), getMessage("emailSignupFailed.msg"));
     }
 
     @ExceptionHandler(CAuthenticationEntryPointException.class)
@@ -53,12 +64,12 @@ public class ExceptionAdvice {
         return responseService.getFailResult(Integer.valueOf(getMessage("accessDenied.code")), getMessage("accessDenied.msg"));
     }
 
-    // code정보에 해당하는 메시지를 조회합니다.
+    // code�젙蹂댁뿉 �빐�떦�븯�뒗 硫붿떆吏�瑜� 議고쉶�빀�땲�떎.
     private String getMessage(String code) {
         return getMessage(code, null);
     }
 
-    // code정보, 추가 argument로 현재 locale에 맞는 메시지를 조회합니다.
+    // code�젙蹂�, 異붽� argument濡� �쁽�옱 locale�뿉 留욌뒗 硫붿떆吏�瑜� 議고쉶�빀�땲�떎.
     private String getMessage(String code, Object[] args) {
         return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
     }

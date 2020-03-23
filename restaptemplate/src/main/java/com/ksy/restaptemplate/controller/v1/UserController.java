@@ -1,5 +1,7 @@
 package com.ksy.restaptemplate.controller.v1;
 
+import com.ksy.restaptemplate.advice.exception.CEmailSigninFailedException;
+import com.ksy.restaptemplate.advice.exception.CEmailSignupFailedException;
 import com.ksy.restaptemplate.advice.exception.CUserNotFoundException;
 import com.ksy.restaptemplate.entity.User;
 import com.ksy.restaptemplate.model.response.CommonResult;
@@ -79,11 +81,14 @@ public class UserController {
 
     @ApiOperation(value = "회원 가입", notes = "입력 받은 email,password ,name 을 가지고 회원 가입을 한다.")
     @PostMapping(value = "/user")
-    @CrossOrigin(origins="http://localhost:8000")
     public CommonResult create(
             @Valid @RequestBody ParamsUser user) {
 
-        System.out.println("여긴 오니..?");
+        System.out.println("API START!"+user.getEmail()+user.getName()+user.getPassword());
+        if(userJpaRepo.findByEmail(user.getEmail()).isPresent()) {
+        	throw new CEmailSignupFailedException();
+        }
+        
         userJpaRepo.save(User.builder()
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(user.getPassword()))
