@@ -10,23 +10,23 @@ public class ChatRoomDto {
     private String roomId;
     private String name;
     private Set<WebSocketSession> sessions = new HashSet<>();
-    
-    
+
+
     public String getRoomId() {
-		return roomId;
-	}
+        return roomId;
+    }
 
-	public void setRoomId(String roomId) {
-		this.roomId = roomId;
-	}
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void handleActions(WebSocketSession session, ChatMessageDto chatMessage, ChatService chatService) {
         if (chatMessage.getType().equals(ChatMessageDto.MessageType.ENTER)) {
