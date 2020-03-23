@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class ParamsRoom {
-  
+
     @NotEmpty
     @ApiModelProperty(value = "방 이름", required = true)
     private String name;

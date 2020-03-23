@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,11 +22,13 @@ import java.util.stream.Collectors;
 
 @Builder
 @Entity
-@Getter 
-@NoArgsConstructor 
-@AllArgsConstructor 
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "room") // 'user' 테이블 명시
-public class Room{
+public class Room implements Serializable {
+    private static final long serialVersionUID = 6494678977089006639L;
+
     @Id // pk
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

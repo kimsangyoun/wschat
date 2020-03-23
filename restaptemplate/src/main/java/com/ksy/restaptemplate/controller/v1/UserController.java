@@ -29,6 +29,7 @@ public class UserController {
     private final UserJpaRepo userJpaRepo;
     private final ResponseService responseService; // 결과를 처리할 Service
     private final PasswordEncoder passwordEncoder;
+
     @ApiImplicitParams({
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")
     })
@@ -84,11 +85,11 @@ public class UserController {
     public CommonResult create(
             @Valid @RequestBody ParamsUser user) {
 
-        System.out.println("API START!"+user.getEmail()+user.getName()+user.getPassword());
-        if(userJpaRepo.findByEmail(user.getEmail()).isPresent()) {
-        	throw new CEmailSignupFailedException();
+        System.out.println("API START!" + user.getEmail() + user.getName() + user.getPassword());
+        if (userJpaRepo.findByEmail(user.getEmail()).isPresent()) {
+            throw new CEmailSignupFailedException();
         }
-        
+
         userJpaRepo.save(User.builder()
                 .email(user.getEmail())
                 .password(passwordEncoder.encode(user.getPassword()))

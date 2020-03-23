@@ -4,6 +4,8 @@ import java.util.Collections;
 
 import javax.validation.Valid;
 
+import com.ksy.restaptemplate.chat.repo.ChatRoomRepository;
+import com.ksy.restaptemplate.model.chat.ChatRoom;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,59 +45,65 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(value = "/v1")
 public class RoomController {
 
-	private final RoomJpaRepo roomJpaRepo;
-	private final ResponseService responseService; // °á°ú¸¦ Ã³¸®ÇÒ Service
-	private final PasswordEncoder passwordEncoder;
+    private final RoomJpaRepo roomJpaRepo;
+    private final ResponseService responseService; // ê²°ê³¼ë¥¼ ì²˜ë¦¬í•  Service
+    private final ChatRoomRepository chatRoomRepo; // ê²°ê³¼ë¥¼ ì²˜ë¦¬í•  Service
+    private final PasswordEncoder passwordEncoder;
 
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "X-AUTH-TOKEN", value = "·Î±×ÀÎ ¼º°ø ÈÄ access_token", required = true, dataType = "String", paramType = "header") })
-	@ApiOperation(value = "·ë ¸®½ºÆ® Á¶È¸", notes = "¸ğµç Ã¤ÆÃ¹æÀ» Á¶È¸ÇÑ´Ù")
-	@GetMapping(value = "/rooms")
-	public ListResult<Room> findAllRoom() {
-		// °á°úµ¥ÀÌÅÍ°¡ ¿©·¯°ÇÀÎ°æ¿ì getListResult¸¦ ÀÌ¿ëÇØ¼­ °á°ú¸¦ Ãâ·ÂÇÑ´Ù.
-		return responseService.getListResult(roomJpaRepo.findAll());
-	}
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "ë¡œê·¸ì¸ ì„±ê³µ í›„ access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "ë£¸ ë¦¬ìŠ¤íŠ¸ ì¡°íšŒ", notes = "ëª¨ë“  ì±„íŒ…ë°©ì„ ì¡°íšŒí•œë‹¤")
+    @GetMapping(value = "/rooms")
+    public ListResult<Room> findAllRoom() {
+        // ê²°ê³¼ë°ì´í„°ê°€ ì—¬ëŸ¬ê±´ì¸ê²½ìš° getListResultë¥¼ ì´ìš©í•´ì„œ ê²°ê³¼ë¥¼ ì¶œë ¥í•œë‹¤.
+        return responseService.getListResult(roomJpaRepo.findAll());
+    }
 
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "X-AUTH-TOKEN", value = "·Î±×ÀÎ ¼º°ø ÈÄ access_token", required = false, dataType = "String", paramType = "header") })
-	@ApiOperation(value = "Ã¤ÆÃ¹æ ´Ü°Ç Á¶È¸", notes = "¹æ¹øÈ£(id)·Î Ã¤ÆÃ¹æÀ» Á¶È¸ÇÑ´Ù")
-	@GetMapping(value = "/room/{msrl}")
-	public SingleResult<Room> findRoomById(@ApiParam(value = "¾ğ¾î", defaultValue = "ko") @RequestParam String lang , @PathVariable int id) {
-		// SecurityContext¿¡¼­ ÀÎÁõ¹ŞÀº È¸¿øÀÇ Á¤º¸¸¦ ¾ò¾î¿Â´Ù.
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "ë¡œê·¸ì¸ ì„±ê³µ í›„ access_token", required = false, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "ì±„íŒ…ë°© ë‹¨ê±´ ì¡°íšŒ", notes = "ë°©ë²ˆí˜¸(id)ë¡œ ì±„íŒ…ë°©ì„ ì¡°íšŒí•œë‹¤")
+    @GetMapping(value = "/room/{msrl}")
+    public SingleResult<Room> findRoomById(@ApiParam(value = "ì–¸ì–´", defaultValue = "ko") @RequestParam String lang, @PathVariable int id) {
+        // SecurityContextì—ì„œ ì¸ì¦ë°›ì€ íšŒì›ì˜ ì •ë³´ë¥¼ ì–»ì–´ì˜¨ë‹¤.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		// °á°úµ¥ÀÌÅÍ°¡ ´ÜÀÏ°ÇÀÎ°æ¿ì getSingleResult¸¦ ÀÌ¿ëÇØ¼­ °á°ú¸¦ Ãâ·ÂÇÑ´Ù.
-		return responseService.getSingleResult(roomJpaRepo.findById(id).orElseThrow(CUserNotFoundException::new));
-	}
+        // ê²°ê³¼ë°ì´í„°ê°€ ë‹¨ì¼ê±´ì¸ê²½ìš° getSingleResultë¥¼ ì´ìš©í•´ì„œ ê²°ê³¼ë¥¼ ì¶œë ¥í•œë‹¤.
+        return responseService.getSingleResult(roomJpaRepo.findById(id).orElseThrow(CUserNotFoundException::new));
+    }
 
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "X-AUTH-TOKEN", value = "·Î±×ÀÎ ¼º°ø ÈÄ access_token", required = true, dataType = "String", paramType = "header") })
-	@ApiOperation(value = "Ã¤ÆÃ¹æ ¼öÁ¤", notes = "¹æÁ¤º¸¸¦ ¼öÁ¤ÇÑ´Ù")
-	@PutMapping(value = "/room")
-	public SingleResult<Room> modify(@ApiParam(value = "¹æ¹øÈ£", required = true) @RequestParam int id,
-			@ApiParam(value = "¹æÀÌ¸§", required = true) @RequestParam String name) {
-		Room room = Room.builder().id(id).name(name).build();
-		return responseService.getSingleResult(roomJpaRepo.save(room));
-	}
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "ë¡œê·¸ì¸ ì„±ê³µ í›„ access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "ì±„íŒ…ë°© ìˆ˜ì •", notes = "ë°©ì •ë³´ë¥¼ ìˆ˜ì •í•œë‹¤")
+    @PutMapping(value = "/room")
+    public SingleResult<Room> modify(@ApiParam(value = "ë°©ë²ˆí˜¸", required = true) @RequestParam int id,
+                                     @ApiParam(value = "ë°©ì´ë¦„", required = true) @RequestParam String name) {
+        Room room = Room.builder().id(id).name(name).build();
+        return responseService.getSingleResult(roomJpaRepo.save(room));
+    }
 
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "X-AUTH-TOKEN", value = "·Î±×ÀÎ ¼º°ø ÈÄ access_token", required = true, dataType = "String", paramType = "header") })
-	@ApiOperation(value = "¹æ »èÁ¦", notes = "roomId·Î È¸¿øÁ¤º¸¸¦ »èÁ¦ÇÑ´Ù")
-	@DeleteMapping(value = "/room/{id}")
-	public CommonResult delete(@ApiParam(value = "¹æ¹øÈ£", required = true) @PathVariable int id) {
-		roomJpaRepo.deleteById((long) id);
-		// ¼º°ø °á°ú Á¤º¸¸¸ ÇÊ¿äÇÑ°æ¿ì getSuccessResult()¸¦ ÀÌ¿ëÇÏ¿© °á°ú¸¦ Ãâ·ÂÇÑ´Ù.
-		return responseService.getSuccessResult();
-	}
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "X-AUTH-TOKEN", value = "·Î±×ÀÎ ¼º°ø ÈÄ access_token", required = true, dataType = "String", paramType = "header") })
-	@ApiOperation(value = "¹æ»ı¼º", notes = "ÀÔ·Â ¹ŞÀº name À» °¡Áö°í ¹æÀ» »ı¼º ÇÑ´Ù.")
-	@PostMapping(value = "/room")
-	public CommonResult create(@Valid @RequestBody ParamsRoom room) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String userid = authentication.getName();
-		roomJpaRepo.save(Room.builder().name(room.getName()).reg_by(userid).build());
-		// ¼º°ø °á°ú Á¤º¸¸¸ ÇÊ¿äÇÑ°æ¿ì getSuccessResult()¸¦ ÀÌ¿ëÇÏ¿© °á°ú¸¦ Ãâ·ÂÇÑ´Ù.
-		return responseService.getSuccessResult();
-	}
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "ë¡œê·¸ì¸ ì„±ê³µ í›„ access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "ë°© ì‚­ì œ", notes = "roomIdë¡œ íšŒì›ì •ë³´ë¥¼ ì‚­ì œí•œë‹¤")
+    @DeleteMapping(value = "/room/{id}")
+    public CommonResult delete(@ApiParam(value = "ë°©ë²ˆí˜¸", required = true) @PathVariable int id) {
+        roomJpaRepo.deleteById((long) id);
+        // ì„±ê³µ ê²°ê³¼ ì •ë³´ë§Œ í•„ìš”í•œê²½ìš° getSuccessResult()ë¥¼ ì´ìš©í•˜ì—¬ ê²°ê³¼ë¥¼ ì¶œë ¥í•œë‹¤.
+        return responseService.getSuccessResult();
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "ë¡œê·¸ì¸ ì„±ê³µ í›„ access_token", required = true, dataType = "String", paramType = "header")})
+    @ApiOperation(value = "ë°©ìƒì„±", notes = "ì…ë ¥ ë°›ì€ name ì„ ê°€ì§€ê³  ë°©ì„ ìƒì„± í•œë‹¤.")
+    @PostMapping(value = "/room")
+    public CommonResult create(@Valid @RequestBody ParamsRoom _room) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userid = authentication.getName();
+        Room room= Room.builder().name(_room.getName()).reg_by(userid).build();
+        roomJpaRepo.save(room); //ë””ë¹„ì— ì €ì¥í•˜ì˜€ê³ .
+        System.out.println(room.getId());
+        chatRoomRepo.createChatRoom(room);
+
+        // ì„±ê³µ ê²°ê³¼ ì •ë³´ë§Œ í•„ìš”í•œê²½ìš° getSuccessResult()ë¥¼ ì´ìš©í•˜ì—¬ ê²°ê³¼ë¥¼ ì¶œë ¥í•œë‹¤.
+        return responseService.getSuccessResult();
+    }
 }

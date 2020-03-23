@@ -28,7 +28,7 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult defaultException(HttpServletRequest request, Exception e) {
         // �삁�쇅 泥섎━�쓽 硫붿떆吏�瑜� MessageSource�뿉�꽌 媛��졇�삤�룄濡� �닔�젙
-    	e.printStackTrace();
+        e.printStackTrace();
         return responseService.getFailResult(Integer.valueOf(getMessage("unKnown.code")), getMessage("unKnown.msg"));
     }
 
@@ -43,11 +43,13 @@ public class ExceptionAdvice {
     protected CommonResult userNotFoundException(HttpServletRequest request, CUserNotFoundException e) {
         return responseService.getFailResult(Integer.valueOf(getMessage("userNotFound.code")), getMessage("userNotFound.msg"));
     }
+
     @ExceptionHandler(CEmailSigninFailedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult emailSigninFailedException(HttpServletRequest request, CEmailSigninFailedException e) {
         return responseService.getFailResult(Integer.valueOf(getMessage("emailSigninFailed.code")), getMessage("emailSigninFailed.msg"));
     }
+
     @ExceptionHandler(CEmailSignupFailedException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected CommonResult emailSignupFailedException(HttpServletRequest request, CEmailSignupFailedException e) {
