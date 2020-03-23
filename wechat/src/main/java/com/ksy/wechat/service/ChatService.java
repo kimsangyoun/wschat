@@ -34,10 +34,10 @@ public class ChatService {
 
     public ChatRoomDto createRoom(String name) {
         String randomId = UUID.randomUUID().toString();
-        ChatRoomDto chatRoom = new ChatRoomDto(randomId,name);
+      //  ChatRoomDto chatRoom = new ChatRoomDto(randomId,name);
 
-        chatRooms.put(randomId, chatRoom);
-        return chatRoom;
+      //  chatRooms.put(randomId, chatRoom);
+        return null;
     }
 
     public <T> void sendMessage(WebSocketSession session, T message) {

@@ -463,10 +463,10 @@
                 </div>
                 <p class="small">or use your email account:</p>
                 <form id="sign-in-form">
-                    <input type="email" placeholder="Email"/>
-                    <input type="password" placeholder="Password"/>
+                    <input type="email" placeholder="Email" id="signinEmail"/>
+                    <input type="password" placeholder="Password" id="signinPwd"/>
                     <p class="forgot-password">Forgot your password?</p>
-                    <button class="control-button in">Sign In</button>
+                    <button type="button" class="control-button in" id="signinBtn">Sign In</button>
                 </form>
             </div>
             <div class="sign-up" id="sign-up-info">
@@ -490,10 +490,10 @@
                 </div>
                 <p class="small">or use your email for registration:</p>
                 <form id="sign-up-form">
-                    <input type="text" placeholder="Name" id="inputNm"/>
-                    <input type="email" placeholder="Email" id="inputEmail"/>
-                    <input type="password" placeholder="Password" id="inputPwd"/>
-                    <button type="button" class="control-button up" id="singupBtn">Sign Up</button>
+                    <input type="text" placeholder="Name" id="signupNm"/>
+                    <input type="email" placeholder="Email" id="signupEmail"/>
+                    <input type="password" placeholder="Password" id="signupPwd"/>
+                    <button type="button" class="control-button up" id="signupBtn">Sign Up</button>
                 </form>
             </div>
         </div>
@@ -507,8 +507,10 @@
     var openSignInButton = document.getElementById("slide-right-button");
 
     //Buttons to 'action'
-    var signUpBtn = document.getElementById("singupBtn");
+    var signUpBtn = document.getElementById("signupBtn");
+    var signInBtn = document.getElementById("signinBtn");
 
+    
     // The sidebars
     var leftText = document.getElementById("sign-in");
     var rightText = document.getElementById("sign-up");
@@ -566,27 +568,70 @@
     }
     actionSignUp = () =>{
         var formData = new Object();
-        formData.email = document.getElementById("inputEmail").value;
-        formData.password = document.getElementById("inputPwd").value;
-        formData.name= document.getElementById("inputNm").value;
+        formData.email = document.getElementById("signupEmail").value;
+        formData.password = document.getElementById("signupPwd").value;
+        formData.name= document.getElementById("signupNm").value;
 
-        fetch('http://localhost:8080/v1/user', {
+        fetch('/signup', {
             method: 'POST',
             body: JSON.stringify(formData),
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': '*/*'
             }
-        })
-            .then(response => response.json())
-            .catch(error => console.error('Error:', error))
-            .then(response => console.log('Success:', JSON.stringify(response)));
+        }).then(function(response) {
+        	response.text().then(function(text){
+        		 var oResult = JSON.parse(text);
+        		 if(oResult.success){
+        			 alert("회원가입 성공");
+        			 openSignIn();
+        		 }else{
+        			 alert(oResult.msg);
+        		 }
+            })
+        }).catch(function(error) {
+       		// Error
+        	console.log(error);
+        });;
+            
     }
+    
+    actionSignIn = () =>{
+        var formData = new Object();
+        formData.email = document.getElementById("signinEmail").value;
+        formData.password = document.getElementById("signinPwd").value;
+
+        fetch('/signin', {
+            method: 'POST',
+            body: JSON.stringify(formData),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': '*/*'
+            }
+        }).then(function(response) {
+        	response.text().then(function(text){
+        		 var oResult = JSON.parse(text);
+        		 if(oResult.success){
+        			 alert("로그인 성공");
+        			 location.href="/main";
+
+        			 //
+        		 }else{
+        			 alert(oResult.msg);
+        		 }
+            })
+        }).catch(function(error) {
+       		// Error
+        	console.log(error);
+        });;
+            
+    }
+    
     // When a 'switch' button is pressed, switch page
     openSignUpButton.addEventListener("click", openSignUp, false);
     openSignInButton.addEventListener("click", openSignIn, false);
     signUpBtn.addEventListener("click", actionSignUp, false);
-
+    signInBtn.addEventListener("click", actionSignIn, false);
 
 </script>
 </html>

@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.apache.httpcomponents:httpclient:4.5'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.2.5.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-devtools'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

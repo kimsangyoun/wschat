@@ -10,16 +10,28 @@ public class ChatRoomDto {
     private String roomId;
     private String name;
     private Set<WebSocketSession> sessions = new HashSet<>();
+    
+    
+    public String getRoomId() {
+		return roomId;
+	}
 
-    public ChatRoomDto(String roomId, String name) {
-        this.roomId = roomId;
-        this.name = name;
-    }
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
     public void handleActions(WebSocketSession session, ChatMessageDto chatMessage, ChatService chatService) {
         if (chatMessage.getType().equals(ChatMessageDto.MessageType.ENTER)) {
             sessions.add(session);
-            chatMessage.setMessage(chatMessage.getSender() + "님이 입장했습니다.");
+            chatMessage.setMessage(chatMessage.getSender() + "�떂�씠 �엯�옣�뻽�뒿�땲�떎.");
         }
         sendMessage(chatMessage, chatService);
     }

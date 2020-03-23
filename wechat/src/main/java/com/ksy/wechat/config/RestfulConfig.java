@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.ksy.wechat.handler.CResponseErrorHandler;
+
 @Configuration
 public class RestfulConfig {
 
@@ -37,6 +39,7 @@ public class RestfulConfig {
 
         factory.setHttpClient(httpClient);
         RestTemplate restTemplate = new RestTemplate(factory);
+        restTemplate.setErrorHandler(new CResponseErrorHandler());
 
         return restTemplate;
     }
