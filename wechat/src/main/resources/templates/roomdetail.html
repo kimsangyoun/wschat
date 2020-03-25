@@ -7,9 +7,72 @@
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 </head>
 <body>
-
+	<div class="msg_history" id="msg_div">
+                    <div class="incoming_msg">
+                        <div class="incoming_msg_img">
+                            <img src="https://ptetutorials.com/images/user-profile.png"
+                                 alt="sunil">
+                        </div>
+                        <div class="received_msg">
+                            <div class="received_withd_msg">
+                                <p>Test which is a new approach to have all solutions</p>
+                                <span class="time_date"> 11:01 AM | June 9</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="outgoing_msg">
+                        <div class="sent_msg">
+                            <p>Test which is a new approach to have all solutions</p>
+                            <span class="time_date"> 11:01 AM | June 9</span>
+                        </div>
+                    </div>
+                    <div class="incoming_msg">
+                        <div class="incoming_msg_img">
+                            <img src="https://ptetutorials.com/images/user-profile.png"
+                                 alt="sunil">
+                        </div>
+                        <div class="received_msg">
+                            <div class="received_withd_msg">
+                                <p>Test, which is a new approach to have</p>
+                                <span class="time_date"> 11:01 AM | Yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="outgoing_msg">
+                        <div class="sent_msg">
+                            <p>Apollo University, Delhi, India Test</p>
+                            <span class="time_date"> 11:01 AM | Today</span>
+                        </div>
+                    </div>
+                    <div class="incoming_msg">
+                        <div class="incoming_msg_img">
+                            <img src="https://ptetutorials.com/images/user-profile.png"
+                                 alt="sunil">
+                        </div>
+                        <div class="received_msg">
+                            <div class="received_withd_msg">
+                                <p>We work directly with our designers and suppliers, and
+                                    sell direct to you, which means quality, exclusive products,
+                                    at a price anyone can afford.</p>
+                                <span class="time_date"> 11:01 AM | Today</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="type_msg">
+                    <div class="input_msg_write">
+                        <input type="text" class="write_msg" placeholder="Type a message"/>
+                        <button class="msg_send_btn" type="button">
+                            <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
 </body>
 <script>
+	/*<![CDATA[*/
+	var roomid = "[[${roomId}]]";
+	var userid = "[[${userId}]]";
+	/*]]>*/
     //alert(document.title);
     // websocket &amp; stomp initialize
     //var sock = new WebSocket("ws://localhost:8080/ws-stomp");
@@ -20,11 +83,13 @@
     function connect() {
         // pub/sub event
         ws.connect({}, function(frame) {
-            ws.subscribe("http://localhost:8080/sub/chat/room/"+14, function(message) {
+            ws.subscribe("/sub/chat/room/"+roomid, function(message) {
                 var recv = JSON.parse(message.body);
+                
                 console.log(recv);
+                templateMyChat(recv.message);
             });
-            ws.send("http://localhost:8080/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:14, sender:"ksang91"}));
+            ws.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:roomid, sender:userid}));
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {
@@ -35,6 +100,24 @@
                 },10*1000);
             }
         });
+    }
+    function templateMyChat(msg){
+    	 var parentDIV = document.createElement("div");
+    	 var msgDIV = document.createElement("div");
+    	 var msgText = document.createElement("p");
+    	 var timeSpan = document.createElement("span");
+    	 
+         msgText.innerText = msg;
+         parentDIV.setAttribute("class", "outgoing_msg");
+         msgDIV.setAttribute("class", "sent_msg");
+         timeSpan.setAttribute("class", "time_date");
+         timeSpan.innerText ='11:01 AM | June 9';
+         
+         msgDIV.appendChild(msgText);
+         msgDIV.appendChild(timeSpan);
+         parentDIV.appendChild(msgDIV);
+
+         document.getElementById("msg_div").appendChild(parentDIV);
     }
     connect();
 </script>
