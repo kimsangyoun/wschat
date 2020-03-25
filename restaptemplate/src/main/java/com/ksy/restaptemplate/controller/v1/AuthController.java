@@ -48,9 +48,8 @@ public class AuthController {
     @GetMapping(value = "/me")
     public SingleResult<User> me(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        String email = jwtTokenProvider.getUserId(token);
-
+        String uid = jwtTokenProvider.getUserId(token);
         // 결과데이터가 단일건인경우 getSingleResult를 이용해서 결과를 출력한다.
-        return responseService.getSingleResult(userJpaRepo.findByEmail(email).orElseThrow(CUserNotFoundException::new));
+        return responseService.getSingleResult(userJpaRepo.findById(Long.parseLong(uid)).orElseThrow(CUserNotFoundException::new));
     }
 }

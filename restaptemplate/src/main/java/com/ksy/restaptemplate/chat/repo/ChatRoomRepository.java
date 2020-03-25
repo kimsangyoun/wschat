@@ -48,7 +48,7 @@ public class ChatRoomRepository {
      */
     public Room createChatRoom(Room room) {
        // ChatRoom chatRoom = ChatRoom.create(name);
-        opsHashChatRoom.put(CHAT_ROOMS,Long.toString(room.getId()), room);
+        opsHashChatRoom.put(CHAT_ROOMS,room.getId(), room);
         return room;
     }
 

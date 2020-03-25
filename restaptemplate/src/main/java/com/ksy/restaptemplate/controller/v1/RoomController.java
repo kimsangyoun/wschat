@@ -1,6 +1,8 @@
 package com.ksy.restaptemplate.controller.v1;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -56,7 +58,9 @@ public class RoomController {
     @GetMapping(value = "/rooms")
     public ListResult<Room> findAllRoom() {
         // 결과데이터가 여러건인경우 getListResult를 이용해서 결과를 출력한다.
-        return responseService.getListResult(roomJpaRepo.findAll());
+    	List<Room> rooml = chatRoomRepo.findAllRoom();
+    	System.out.println(rooml.size()+"싸이즈");
+        return responseService.getListResult(chatRoomRepo.findAllRoom());
     }
 
     @ApiImplicitParams({
@@ -75,7 +79,7 @@ public class RoomController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "채팅방 수정", notes = "방정보를 수정한다")
     @PutMapping(value = "/room")
-    public SingleResult<Room> modify(@ApiParam(value = "방번호", required = true) @RequestParam int id,
+    public SingleResult<Room> modify(@ApiParam(value = "방번호", required = true) @RequestParam String id,
                                      @ApiParam(value = "방이름", required = true) @RequestParam String name) {
         Room room = Room.builder().id(id).name(name).build();
         return responseService.getSingleResult(roomJpaRepo.save(room));
@@ -98,7 +102,8 @@ public class RoomController {
     public CommonResult create(@Valid @RequestBody ParamsRoom _room) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userid = authentication.getName();
-        Room room= Room.builder().name(_room.getName()).reg_by(userid).build();
+        String roomid = UUID.randomUUID().toString();
+        Room room= Room.builder().id(roomid).name(_room.getName()).reg_by(userid).build();
         roomJpaRepo.save(room); //디비에 저장하였고.
         System.out.println(room.getId());
         chatRoomRepo.createChatRoom(room);

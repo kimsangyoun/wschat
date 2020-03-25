@@ -30,8 +30,7 @@ public class Room implements Serializable {
     private static final long serialVersionUID = 6494678977089006639L;
 
     @Id // pk
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String id;
     @Column(nullable = false, unique = true, length = 30)
     private String name;
     @CreationTimestamp
