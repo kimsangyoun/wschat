@@ -1,6 +1,7 @@
 package com.ksy.restaptemplate.chat.interceptor;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.messaging.Message;
@@ -51,14 +52,12 @@ public class StompInterceptor implements ChannelInterceptor {
             // 채팅방의 인원수를 +1한다.
             chatRoomRepository.plusUserCount(roomId);
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            System.out.println("===================================");
-            System.out.println("room id" + roomId);
-            System.out.println("session id" + sessionId);
-            for(String key : message.getHeaders().keySet()) {
-            	System.out.println("해더 키키키"+key+"//"+message.getHeaders().get(key));
-            }
-            System.out.println("===================================");
+            //String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+
+           // String aa = message.getHeaders().get("nativeHeaders");
+            
+            List<String> headerlist = accessor.getNativeHeader("user");
+            String name = headerlist.get(headerlist.size()-1);
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
             log.info("SUBSCRIBED {}, {}", name, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
