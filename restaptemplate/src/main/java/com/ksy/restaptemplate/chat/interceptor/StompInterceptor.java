@@ -40,6 +40,7 @@ public class StompInterceptor implements ChannelInterceptor {
             System.out.println("unm" + unm);
             System.out.println("*************************");
             accessor.setHeader("simpUser", unm);
+ 
             jwtTokenProvider.validateToken(jwtToken);
         } else if (StompCommand.SUBSCRIBE == accessor.getCommand()) { // 채팅룸 구독요청 일때에는 
             // header정보에서 구독 destination정보를 얻고, roomId를 추출한다.
