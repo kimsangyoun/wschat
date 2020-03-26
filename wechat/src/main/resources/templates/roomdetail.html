@@ -23,17 +23,19 @@
 	/*<![CDATA[*/
 	var roomid = "[[${roomId}]]";
 	var userid = "[[${userId}]]";
+	var token = "[[${accesstoken}]]";
 	/*]]>*/
     //alert(document.title);
     // websocket &amp; stomp initialize
-    //var sock = new WebSocket("ws://localhost:8080/ws-stomp");
-    var sock = new SockJS("http://118.36.189.43:8080/ws-stomp");
+    var sock = new SockJS("http://localhost:8080/ws-stomp");
+   // var sock = new SockJS("http://118.36.189.43:8080/ws-stomp");
     var ws = Stomp.over(sock);
     var reconnect = 0;
     // vue.js
     function connect() {
         // pub/sub event
-        ws.connect({}, function(frame) {
+        debugger;
+        ws.connect({"X-AUTH-TOKEN":token}, function(frame) {
             ws.subscribe("/sub/chat/room/"+roomid, function(message) {
                 var recv = JSON.parse(message.body);
                 
@@ -46,12 +48,12 @@
 
                 document.getElementById("special_id").scrollIntoView();
             });
-            ws.send("/pub/chat/message", {}, JSON.stringify({type:'ENTER', roomId:roomid, sender:userid}));
+           // ws.send("/pub/chat/message", {"X-AUTH-TOKEN":token}, JSON.stringify({type:'ENTER', roomId:roomid, sender:userid}));
         }, function(error) {
             if(reconnect++ <= 5) {
                 setTimeout(function() {
                     console.log("connection reconnect");
-                    sock = new WebSocket("ws://localhost:8080/ws-stomp");
+                    sock = new WebSocket("http://localhost:8080/ws-stomp");
                     ws = Stomp.over(sock);
                     connect();
                 },10*1000);
@@ -105,7 +107,7 @@
     }
     function sendMessage(){
         var msg = document.getElementById("inputMsg").value;
-        ws.send("/pub/chat/message", {}, JSON.stringify({type:'TALK', roomId:roomid, sender:userid, message:msg}));
+        ws.send("/pub/chat/message", {"X-AUTH-TOKEN":token}, JSON.stringify({type:'TALK', roomId:roomid, sender:userid, message:msg}));
         document.getElementById("inputMsg").value="";
     }
     connect();
