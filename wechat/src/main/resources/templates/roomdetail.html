@@ -47,7 +47,7 @@
                 var msgDiv = document.getElementById("msg_div");
 
                 document.getElementById("special_id").scrollIntoView();
-            });
+            },{"user":userid});
            // ws.send("/pub/chat/message", {"X-AUTH-TOKEN":token}, JSON.stringify({type:'ENTER', roomId:roomid, sender:userid}));
         }, function(error) {
             if(reconnect++ <= 5) {
