@@ -6,8 +6,9 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import com.ksy.restaptemplate.chat.model.ChatRoom;
 import com.ksy.restaptemplate.chat.repo.ChatRoomRepository;
-import com.ksy.restaptemplate.model.chat.ChatRoom;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -56,11 +57,12 @@ public class RoomController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "룸 리스트 조회", notes = "모든 채팅방을 조회한다")
     @GetMapping(value = "/rooms")
-    public ListResult<Room> findAllRoom() {
+    public ListResult<ChatRoom> findAllRoom() {
+    	List<ChatRoom> chatRooms = chatRoomRepo.findAllRoom();
+        chatRooms.stream().forEach(room -> room.setUserCount(chatRoomRepo.getUserCount(room.getRoomId())));
+        return responseService.getListResult(chatRooms);
+        
         // 결과데이터가 여러건인경우 getListResult를 이용해서 결과를 출력한다.
-    	List<Room> rooml = chatRoomRepo.findAllRoom();
-    	System.out.println(rooml.size()+"싸이즈");
-        return responseService.getListResult(chatRoomRepo.findAllRoom());
     }
 
     @ApiImplicitParams({
@@ -105,7 +107,6 @@ public class RoomController {
         String roomid = UUID.randomUUID().toString();
         Room room= Room.builder().id(roomid).name(_room.getName()).reg_by(userid).build();
         roomJpaRepo.save(room); //디비에 저장하였고.
-        System.out.println(room.getId());
         chatRoomRepo.createChatRoom(room);
 
         // 성공 결과 정보만 필요한경우 getSuccessResult()를 이용하여 결과를 출력한다.

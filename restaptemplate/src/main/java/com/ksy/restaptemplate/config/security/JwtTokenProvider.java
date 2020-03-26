@@ -12,11 +12,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import com.ksy.restaptemplate.entity.User;
+import com.ksy.restaptemplate.repo.UserJpaRepo;
+
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -28,6 +32,8 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
 
     private final UserDetailsService userDetailsService;
+    
+    private final UserJpaRepo userJpaRepo;
 
     @PostConstruct
     protected void init() {
@@ -57,7 +63,15 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     public String getUserId(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
-
+    public String getUserNm(String token) {
+    	//UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserId(token));
+    	Optional<User> user= userJpaRepo.findById(Long.parseLong(this.getUserId(token)));
+    	if(user.isPresent()) {
+    		return user.get().getName();
+    	}else {
+    		return "undefined user";
+    	}
+    }
     // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
     public String resolveToken(HttpServletRequest req) {
         return req.getHeader("X-AUTH-TOKEN");
