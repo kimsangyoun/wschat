@@ -53,7 +53,6 @@
             display: inline-block;
             text-align: right;
             width: 60%;
-            padding:
         }
 
         .headind_srch {
@@ -139,6 +138,7 @@
         .incoming_msg_img {
             display: inline-block;
             width: 6%;
+            margin-top: 10px;
         }
 
         .received_msg {
@@ -157,7 +157,15 @@
             padding: 5px 10px 5px 12px;
             width: 100%;
         }
-
+        .notify_withd_msg p {
+            background: #ebebeb none repeat scroll 0 0;
+            border-radius: 3px;
+            color: #646464;
+            font-size: 14px;
+            margin: 0;
+            padding: 5px 10px 5px 12px;
+            width: 100%;
+        }
         .time_date {
             color: #747474;
             display: block;
@@ -258,7 +266,7 @@
             <div class="inbox_people">
                 <div class="headind_srch">
                     <div class="recent_heading">
-                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">
+                        <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="makeroomBtn">
                             방만들기
                         </button>
                     </div>
@@ -281,7 +289,7 @@
 					<div class="container" style='height:700px'>
 						<div class="row" style='height:700px;width:100%;position:relative;'>
 							<h2>
-								<div data-splitting>채팅방에 입장하세요</div>
+								<div data-splitting>[[${userId}]] 님 안녕하세요. 채팅방에 입장하세요</div>
 							</h2>
 						</div>
 					</div>
@@ -309,7 +317,7 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="Input">채팅방 이름 :</label>
+                            <label>채팅방 이름 :</label>
                             <input type="text" class="form-control" id="inputRoomNm" placeholder="방 이름을 입력하세요.">
                         </div>
                     </form>
@@ -318,7 +326,7 @@
                 <!-- Modal footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="makeroomBtn">방만들기</button>
+                    <button type="button" class="btn btn-primary" id="makeroomModalBtn">방만들기</button>
                 </div>
 
             </div>
@@ -328,7 +336,7 @@
 
 </body>
 <script>
-    var makeRoomBtn = document.getElementById("makeroomBtn");
+
 
     actionMakeRoom = () => {
         var formData = new Object();
@@ -361,6 +369,7 @@
     }
     actionEnterRoom = (id) => {
         //location.href="/roomdetail";
+        //채팅 창 올리고.
     	$.ajax({
     		url:'/room/enter/'+id,
     		type: "GET",
@@ -369,6 +378,15 @@
     			document.getElementById("msgDiv").setAttribute("style", "overflow-y:scroll;");
     		}
     	});
+    	//유저리스트 뿌리고.
+        $.ajax({
+            url:'/room/users',
+            type: "GET",
+            success:function(result) {
+                $("#chatlistDiv").html(result);
+            }
+        });
+
     }
     actionReadRoom = () => {
         var formData = new Object();
@@ -393,10 +411,13 @@
                         var peopleDIV = document.createElement("div");
                         var imageDIV = document.createElement("div");
                         var titleDIV = document.createElement("div");
+                        var titlechildDIV = document.createElement("div");
                         var imageDom = document.createElement("img");
                         var titleText = document.createElement("h5");
                         var descriptionText = document.createElement("p");
+                        var userCountText = document.createElement("p");
                         var enterBtn = document.createElement("button");
+
 
                         enterBtn.setAttribute("type","button");
                         imageDom.setAttribute("src", "https://ptetutorials.com/images/user-profile.png");
@@ -406,15 +427,23 @@
                         titleDIV.setAttribute("class", "chat_ib");
 
                         enterBtn.innerText="입장";
+                        enterBtn.style.float="left";
                         //enterBtn.onclick =
                         enterBtn.addEventListener("click", function(e) {
                             actionEnterRoom(v.roomId);
                         });
                         titleText.innerText = v.name;
                         descriptionText.innerText = "Test, which is a new approach to have all solutions tastrology under one roof.";
+
+                        titlechildDIV.style.display = "inline";
+                        userCountText.style.float ="right"
+                        userCountText.innerText=v.userCount+"명";
+
+                        titlechildDIV.appendChild(enterBtn);
+                        titlechildDIV.appendChild(userCountText);
                         imageDIV.appendChild(imageDom);
                         titleDIV.appendChild(titleText);
-                        titleDIV.appendChild(enterBtn);
+                        titleDIV.appendChild(titlechildDIV);
                         peopleDIV.appendChild(imageDIV);
                         peopleDIV.appendChild(titleDIV);
                         newDIV.appendChild(peopleDIV);
@@ -443,10 +472,17 @@
             // Error
             console.log(error);
         });
-
-
-
     }
+
+    // When a 'switch' button is pressed, switch page
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Handler when the DOM is fully loaded
+        var makeRoomBtn = document.getElementById("makeroomModalBtn");
+        makeRoomBtn.addEventListener("click", actionMakeRoom, false);
+        actionReadRoom();
+    });
+
     actionCloseModal = (modalId) => {
 
         // get modal
@@ -463,13 +499,6 @@
          // remove opened modal backdrop
           document.body.removeChild(modalBackdrops[0]);
       }
-    // When a 'switch' button is pressed, switch page
-    makeRoomBtn.addEventListener("click", actionMakeRoom, false);
-
-    document.addEventListener("DOMContentLoaded", function () {
-        // Handler when the DOM is fully loaded
-        actionReadRoom();
-    });
 
 </script>
 <script>

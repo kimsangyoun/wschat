@@ -1,5 +1,7 @@
 package com.ksy.wechat.controller;
 
+import com.ksy.wechat.service.RestAuthService;
+import com.ksy.wechat.service.RestRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,107 +30,70 @@ import javax.servlet.http.HttpServletRequest;
 
 
 @Controller
+@RequestMapping("/room")
 public class ChatRoomController {
-	@Autowired
-	RestTemplate restTemplate;
-	
-    @GetMapping("/room")
+    @Autowired
+    RestRoomService restRoomService;
+    @Autowired
+    RestAuthService restAuthService;
+
+    @GetMapping("/")
     public String rooms(Model model) {
         return "/chat/room";
     }
 
+    @GetMapping("/users")
+    public String users(Model model) {
+        return "/userlist";
+    }
 
-    @GetMapping("/room/enter/{roomId}")
-    public String roomDetail(Model model, @PathVariable String roomId,HttpServletRequest request) throws JsonMappingException, JsonProcessingException {
-    	
-    	final String uri = "http://localhost:8080/v1/auth/me";
-    	System.out.println(roomId+"�� ��");
+
+    @GetMapping("/enter/{roomId}")
+    public String EnterRoom(Model model, @PathVariable String roomId,HttpServletRequest request){
         String token = CookieUtill.getValue(request, "accesstoken");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-AUTH-TOKEN", token);
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        // build the request
-        HttpEntity entity = new HttpEntity(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                entity,
-                String.class,
-                1
-        );
+        ResponseEntity<String> response = restAuthService.readUserByToken(token);
         // check response
         if (response.getStatusCode() == HttpStatus.OK) {
-        	ObjectMapper om = new ObjectMapper();
-        	SingleResultDto resultData = om.readValue(response.getBody(), SingleResultDto.class);
-        	Map<String, Object> map = om.convertValue(resultData.getData(), Map.class);
-        	String unm = (String)map.get("name");
-        	model.addAttribute("userId", unm);
-        	//resultData
+            try {
+                ObjectMapper om = new ObjectMapper();
+                SingleResultDto resultData = om.readValue(response.getBody(), SingleResultDto.class);
+                Map<String, Object> map = om.convertValue(resultData.getData(), Map.class);
+                String unm = (String)map.get("name");
+                model.addAttribute("userId", unm);
+            }catch (JsonProcessingException e){
+                //JsonProcessingException
+            }
 
         } else {
+            //todo 이름정보 못가져왔을 경우에는 어떻게 할것인가.
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());
         }
+
         model.addAttribute("accesstoken", token);
         model.addAttribute("roomId", roomId);
+
         return "/roomdetail";
     }
-    @PostMapping("/room/makeroom")
-    @ResponseBody
-    public String MakeRoom(@RequestBody ChatRoomDto room, HttpServletRequest request) throws MalformedURIException {
 
-        final String uri = "http://localhost:8080/v1/room";
+    @PostMapping("/makeroom")
+    @ResponseBody
+    public String MakeRoom(@RequestBody ChatRoomDto room, HttpServletRequest request) {
+        //todo room validate
 
         String token = CookieUtill.getValue(request, "accesstoken");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-AUTH-TOKEN", token);
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        ResponseEntity<String> response = restRoomService.createRoom(token,room);
 
-        // build the request
-        HttpEntity<ChatRoomDto> entity = new HttpEntity<>(room, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
-        return response.getBody().toString();
+        return response.getBody();
     }
 
-    @GetMapping("/room/readroom")
+    @GetMapping("/readroom")
     @ResponseBody
-    public String ReadRoom(HttpServletRequest request) throws MalformedURIException {
-
-        final String uri = "http://localhost:8080/v1/rooms";
-
+    public String ReadRoom(HttpServletRequest request) {
         String token = CookieUtill.getValue(request, "accesstoken");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-AUTH-TOKEN", token);
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        // build the request
-        HttpEntity entity = new HttpEntity(headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(
-                uri,
-                HttpMethod.GET,
-                entity,
-                String.class,
-                1
-        );
-        // check response
-        if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println("Request Successful.");
-            System.out.println(response.getBody());
+        ResponseEntity<String> response = restRoomService.readRoomList(token);
 
-        } else {
-            System.out.println("Request Failed");
-            System.out.println(response.getStatusCode());
-        }
         return response.getBody();
     }
 

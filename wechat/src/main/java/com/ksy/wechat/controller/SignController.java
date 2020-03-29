@@ -5,6 +5,9 @@ import java.util.Collections;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksy.wechat.dto.CommonResultDto;
+import com.ksy.wechat.service.RestAuthService;
+import com.ksy.wechat.service.RestRoomService;
+import com.ksy.wechat.service.RestUserService;
 import com.ksy.wechat.utill.CookieUtill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -28,7 +31,9 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class SignController {
     @Autowired
-    RestTemplate restTemplate;
+    RestAuthService restAuthService;
+    @Autowired
+    RestUserService restUserService;
 
     @GetMapping("/sign")
     public String SignView(Model model) {
@@ -39,43 +44,23 @@ public class SignController {
     @PostMapping("/signup")
     @ResponseBody
     public String SignUp(@RequestBody ChatUserDto user) throws MalformedURIException {
-        final String uri = "http://localhost:8080/v1/user";
-        //final String baseUrl = "http://localhost:"+randomServerPort+"/employees/";
-        URI url = new URI(uri);
+        //TODO user에 대한 validate 체크
+        ResponseEntity<String> response = restUserService.createUser(user);
 
-        HttpHeaders headers = new HttpHeaders();
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        // build the request
-        HttpEntity<ChatUserDto> entity = new HttpEntity<>(user, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
-        return response.getBody().toString();
+        return response.getBody();
     }
 
     @PostMapping("/signin")
     @ResponseBody
     public String SignIn(@RequestBody ChatUserDto user, HttpServletResponse httpresponse, HttpServletRequest request) throws MalformedURIException, JsonProcessingException {
         final String uri = "http://localhost:8080/v1/auth/signin";
-        URI url = new URI(uri);
         ObjectMapper om = new ObjectMapper();
-        HttpHeaders headers = new HttpHeaders();
-        // set `content-type` header
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        // set `accept` header
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-
-        // build the request
-        HttpEntity<ChatUserDto> entity = new HttpEntity<>(user, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(uri, entity, String.class);
+        ResponseEntity<String> response = restAuthService.readUserByEmail(user);
         CommonResultDto resultDto = om.readValue(response.getBody(), CommonResultDto.class);
         String token = resultDto.getData();
         //쿠키 저장.
         CookieUtill.create(httpresponse, "accesstoken", token, false, 3600, request.getServerName());
-        System.out.println(token);
 
-        return response.getBody().toString();
+        return response.getBody();
     }
 }
