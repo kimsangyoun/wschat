@@ -8,5 +8,5 @@ spring:
       username: root
       password: Password12!
   redis:
-    host: 127.0.0.1
+    host: localhost
     port: 6379

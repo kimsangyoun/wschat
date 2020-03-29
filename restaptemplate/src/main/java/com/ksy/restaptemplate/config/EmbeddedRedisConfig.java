@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 
 import redis.embedded.RedisServer;
 
-@Profile("dev")
+@Profile("local")
 @Configuration
 public class EmbeddedRedisConfig {
 
@@ -20,7 +20,14 @@ public class EmbeddedRedisConfig {
 
     @PostConstruct
     public void redisServer() {
-        redisServer = new RedisServer(redisPort);
+        redisServer = RedisServer.builder()
+                .port(6379)
+                .setting("bind 127.0.0.1") // good for local development on Windows to prevent security popups
+                .setting("daemonize no")
+                .setting("appendonly no")
+                .setting("maxmemory 128M")
+                .build();
+
         redisServer.start();
     }
 

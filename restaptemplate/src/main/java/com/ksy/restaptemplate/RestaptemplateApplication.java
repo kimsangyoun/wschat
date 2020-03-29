@@ -5,13 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import redis.embedded.RedisServer;
 
 @SpringBootApplication
 public class RestaptemplateApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(RestaptemplateApplication.class, args);
-    }
+    public static void main(String[] args) { SpringApplication.run(RestaptemplateApplication.class, args); }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
