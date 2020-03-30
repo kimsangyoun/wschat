@@ -69,7 +69,7 @@ public class RoomController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = false, dataType = "String", paramType = "header")})
     @ApiOperation(value = "채팅방 단건 조회", notes = "방번호(id)로 채팅방을 조회한다")
     @GetMapping(value = "/room/{msrl}")
-    public SingleResult<Room> findRoomById(@ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang, @PathVariable int id) {
+    public SingleResult<Room> findRoomById(@ApiParam(value = "언어", defaultValue = "ko") @RequestParam String lang, @PathVariable String id) {
         // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -91,8 +91,8 @@ public class RoomController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "방 삭제", notes = "roomId로 회원정보를 삭제한다")
     @DeleteMapping(value = "/room/{id}")
-    public CommonResult delete(@ApiParam(value = "방번호", required = true) @PathVariable int id) {
-        roomJpaRepo.deleteById((long) id);
+    public CommonResult delete(@ApiParam(value = "방번호", required = true) @PathVariable String id) {
+        roomJpaRepo.deleteById(id);
         // 성공 결과 정보만 필요한경우 getSuccessResult()를 이용하여 결과를 출력한다.
         return responseService.getSuccessResult();
     }

@@ -1,5 +1,7 @@
 package com.ksy.restaptemplate.chat.service;
 
+import com.ksy.restaptemplate.entity.Room;
+import com.ksy.restaptemplate.repo.RoomJpaRepo;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ public class ChatService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatRoomRepository chatRoomRepository;
- 
+    private final RoomJpaRepo roomJpaRepo;
     /**
      * destination정보에서 roomId 추출
      */
@@ -32,12 +34,15 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-        System.out.println("sendChatMessage 01");
+
         chatMessage.setUserCount(chatRoomRepository.getUserCount(chatMessage.getRoomId()));
-        System.out.println("sendChatMessage 02" + chatMessage.getUserCount());
-        System.out.println("sendChatMessage 03" + chatMessage.getType());
+
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
+            System.out.println("sendChatMessage 04" + chatMessage.getRoomId());
             System.out.println("sendChatMessage 04" + chatMessage.getSender());
+            String roomNm = roomJpaRepo.findById(chatMessage.getRoomId()).orElse(new Room()).getName();
+            System.out.println("sendChatMessage 04" + roomNm);
+            chatMessage.setRoomNm(roomNm);
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
         } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
