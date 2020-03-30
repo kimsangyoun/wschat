@@ -271,14 +271,13 @@
                         </button>
                     </div>
                     <div class="srch_bar">
-                        <div class="stylish-input-group">
-                            <input type="text" class="search-bar" placeholder="Search">
-                            <span class="input-group-addon">
-									<button type="button">
-										<i class="fa fa-search" aria-hidden="true"></i>
-									</button>
-								</span>
-                        </div>
+                        <section class="title-banner py-4" id="title-banner">
+                            <div class="container">
+                                <div class="row">
+                                    <h4 id="roomTitleText"></h4>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
                 <div class="inbox_chat" id="chatlistDiv">
@@ -353,9 +352,11 @@
             response.text().then(function (text) {
                 var oResult = JSON.parse(text);
                 if (oResult.success) {
-                    alert("방만들기 성공");
-                    actionReadRoom();
                     actionCloseModal('myModal');
+                   // alert("방만들기 성공");
+                    actionEnterRoom(oResult.data.id );
+                   // actionReadRoom();
+
                 } else {
                     alert(oResult.msg);
                 }
