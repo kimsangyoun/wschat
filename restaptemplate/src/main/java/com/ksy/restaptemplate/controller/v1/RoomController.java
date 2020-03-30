@@ -101,7 +101,7 @@ public class RoomController {
             @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "로그인 성공 후 access_token", required = true, dataType = "String", paramType = "header")})
     @ApiOperation(value = "방생성", notes = "입력 받은 name 을 가지고 방을 생성 한다.")
     @PostMapping(value = "/room")
-    public CommonResult create(@Valid @RequestBody ParamsRoom _room) {
+    public SingleResult<Room> create(@Valid @RequestBody ParamsRoom _room) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userid = authentication.getName();
         String roomid = UUID.randomUUID().toString();
@@ -110,6 +110,6 @@ public class RoomController {
         chatRoomRepo.createChatRoom(room);
 
         // 성공 결과 정보만 필요한경우 getSuccessResult()를 이용하여 결과를 출력한다.
-        return responseService.getSuccessResult();
+        return responseService.getSingleResult(room);
     }
 }
