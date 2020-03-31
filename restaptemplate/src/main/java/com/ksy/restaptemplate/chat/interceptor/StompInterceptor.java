@@ -53,7 +53,8 @@ public class StompInterceptor implements ChannelInterceptor {
             chatRoomRepository.plusUserCount(roomId);
             //채팅방에 들어온 유저의 정보들을 저장한다. (room 안에 유저 파악)
             chatRoomRepository.setRoomUserInfo(roomId,name);
-
+            
+            
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).userList(chatRoomRepository.getUserListByRoomid(roomId)).build());
             log.info("SUBSCRIBED {}, {}", name, roomId);
@@ -74,6 +75,11 @@ public class StompInterceptor implements ChannelInterceptor {
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).userList(chatRoomRepository.getUserListByRoomid(roomId)).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             chatRoomRepository.removeUserEnterInfo(sessionId);
+            
+            if(chatRoomRepository.getUserCount(roomId) <1) {
+            	chatRoomRepository.deleteChatRoom(roomId);
+            }
+            
             log.info("DISCONNECTED {}, {}", sessionId, roomId);
         }
         return message;

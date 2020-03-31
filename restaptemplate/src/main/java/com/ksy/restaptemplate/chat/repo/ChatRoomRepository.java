@@ -42,7 +42,11 @@ public class ChatRoomRepository {
     public ChatRoom findRoomById(String id) {
         return hashOpsChatRoom.get(CHAT_ROOMS, id);
     }
- 
+    public void deleteChatRoom(String id) {
+    	if(hashOpsChatRoom.hasKey(CHAT_ROOMS, id)) {
+    		hashOpsChatRoom.delete(CHAT_ROOMS, id);
+    	}
+    }
     // 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
     public ChatRoom createChatRoom(Room room) {
     	ChatRoom chatroom = ChatRoom.builder().roomId(room.getId()).name(room.getName()).userCount(0).build();
