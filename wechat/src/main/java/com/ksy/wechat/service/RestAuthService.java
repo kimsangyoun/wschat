@@ -17,8 +17,8 @@ public class RestAuthService {
     RestTemplate restTemplate;
 
     public ResponseEntity<String> readUserByToken(String token){
-        //todo 프로퍼티로 도메인 주소 등등 빼자.
-        final String uri = "http://localhost:8080/v1/auth/me";
+        //todo �봽濡쒗띁�떚濡� �룄硫붿씤 二쇱냼 �벑�벑 鍮쇱옄.
+        final String uri = "https://localhost:8443/v1/auth/me";
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-AUTH-TOKEN", token);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -36,8 +36,8 @@ public class RestAuthService {
         return response;
     }
     public ResponseEntity<String> readUserByEmail(ChatUserDto user){
-        //todo 프로퍼티로 도메인 주소 등등 빼자.
-        final String uri = "http://localhost:8080/v1/auth/signin";
+        //todo �봽濡쒗띁�떚濡� �룄硫붿씤 二쇱냼 �벑�벑 鍮쇱옄.
+        final String uri = "https://localhost:8443/v1/auth/signin";
         HttpHeaders headers = new HttpHeaders();
         // set `content-type` header
         headers.setContentType(MediaType.APPLICATION_JSON);

@@ -5,10 +5,27 @@
     <title>Title</title>
     <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
+    <style>
+	    video {
+	    	/* fix this */
+	    	height: 100vh;
+	    	width: 100%;
+	    }
+	</style>
 </head>
 <body>
-	<div class="msg_history" id="msg_div">
+	<div id="container" class="jumbotron">
+		<canvas id='canvas' style='width:600px;height:600px'></canvas>
+	</div>
+<div style='display:none'>
+    <ul id="log">
 
+    </ul>
+</div>
+
+<script src="/static/bundle.js"></script>
+	<div class="msg_history" id="msg_div">
+				
                 </div>
                 <div class="type_msg">
                     <div class="input_msg_write">
@@ -24,11 +41,16 @@
 	var roomid = "[[${roomId}]]";
 	var userid = "[[${userId}]]";
 	var token = "[[${accesstoken}]]";
+	var isEntered = false;
+	
+	var videoWidth = '300';
+	var videoHeight = '300';
 	/*]]>*/
     //alert(document.title);
     // websocket &amp; stomp initialize
-    //var sock = new SockJS("http://localhost:8080/ws-stomp");
-    var sock = new SockJS("http://118.36.189.43:8080/ws-stomp");
+   // var sock = new SockJS("http://localhost:8080/ws-stomp");
+    var sock = new SockJS("https://"+window.location.hostname+":8443/ws-stomp");
+   // var sock = new SockJS("http://118.36.189.43:8080/ws-stomp");
     var ws = Stomp.over(sock);
     var reconnect = 0;
     // vue.js
@@ -36,10 +58,22 @@
         // pub/sub event
         debugger;
         ws.connect({"X-AUTH-TOKEN":token}, function(frame) {
+
             ws.subscribe("/sub/chat/room/"+roomid, function(message) {
+            	
                 var recv = JSON.parse(message.body);
-                debugger;
+
                 if(recv.type=='ENTER' || recv.type=='QUIT'){
+                	if(!isEntered && recv.type=='ENTER'){
+                		if(recv.userCount ==1){
+                			window.app.createConversation(roomid);
+                			isEntered = true;
+                		}else if (recv.userCount >1){
+                			window.app.joinConversation(roomid);
+                			isEntered = true;
+                		}
+                	}
+              
                     drawUserList(recv.userList);
                     var RoomTitleText = document.getElementById("roomTitleText");
                     RoomTitleText.innerText=recv.roomNm;
@@ -59,7 +93,7 @@
             if(reconnect++ <= 5) {
                 setTimeout(function() {
                     console.log("connection reconnect");
-                    sock = new SockJS("http://localhost:8080/ws-stomp");
+                    sock = new SockJS("https://"+window.location.hostname+":8443/ws-stomp");
                     ws = Stomp.over(sock);
                     connect();
                 },10*1000);

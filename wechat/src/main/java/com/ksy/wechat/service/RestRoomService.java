@@ -15,8 +15,8 @@ public class RestRoomService {
     RestTemplate restTemplate;
 
     public ResponseEntity<String> createRoom(String token,ChatRoomDto room){
-        //todo 프로퍼티로 도메인 주소 등등 빼자.
-        final String uri = "http://localhost:8080/v1/room";
+        //todo �봽濡쒗띁�떚濡� �룄硫붿씤 二쇱냼 �벑�벑 鍮쇱옄.
+        final String uri = "https://localhost:8443/v1/room";
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-AUTH-TOKEN", token);
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -29,7 +29,7 @@ public class RestRoomService {
         return response;
     }
     public ResponseEntity<String> readRoomList(String token){
-        final String uri = "http://localhost:8080/v1/rooms";
+        final String uri = "https://localhost:8443/v1/rooms";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-AUTH-TOKEN", token);

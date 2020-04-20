@@ -17,7 +17,7 @@ public class RestUserService {
     RestTemplate restTemplate;
 
     public ResponseEntity<String> createUser(ChatUserDto user){
-        final String uri = "http://localhost:8080/v1/user";
+        final String uri = "https://localhost:8443/v1/user";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
