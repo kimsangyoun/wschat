@@ -21,7 +21,7 @@ public class EmbeddedRedisConfig {
     @PostConstruct
     public void redisServer() {
         redisServer = RedisServer.builder()
-                .port(6379)
+                .port(redisPort)
                 .setting("bind 127.0.0.1") // good for local development on Windows to prevent security popups
                 .setting("daemonize no")
                 .setting("appendonly no")

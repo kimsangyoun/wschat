@@ -1,9 +1,10 @@
 server:
-  port: 8080
+  port: 8443
 spring:
   profiles:
     active: local # 디폴트 환경
+  main:
+    allow-bean-definition-overriding: true
   messages:
     basename: i18n/exception
     encoding: UTF-8
-
